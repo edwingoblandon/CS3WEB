@@ -17,8 +17,8 @@ export default function Header() {
                     <Link to='/contact' className='text-dark fw-medium text-decoration-none'>Contacto</Link>
                     <Link to='/quotes' className='text-dark fw-medium text-decoration-none'>Agendar cita</Link>
                 </nav>
-                <button className="btn btn-light rounded-circle d-flex align-items-center justify-content-center" style={{ width: "40px", height: "40px" }}>
-                    <img src="https://static.thenounproject.com/png/4238597-200.png" width={30}/>
+                <button className="btn btn-light rounded-circle d-flex align-items-center justify-content-center" style={{ width: "40px", height: "40px", backgroundColor: "#e8e8e8"}}>
+                    <img src="https://static.thenounproject.com/png/4238597-200.png" style={{width:"30px" }} className='rounded-custom'/>
                 </button>
             </div>
         </header>
