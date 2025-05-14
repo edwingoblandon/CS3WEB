@@ -13,7 +13,6 @@ export default function Header() {
                 <nav className="d-flex align-items-center gap-3">
                     <Link to='/' className='text-dark fw-medium text-decoration-none'>Inicio</Link>
                     <Link to='/products' className='text-dark fw-medium text-decoration-none'>Productos</Link>
-                    <Link to='/team' className='text-dark fw-medium text-decoration-none'>Nuestro Equipo</Link>
                     <Link to='/contact' className='text-dark fw-medium text-decoration-none'>Contacto</Link>
                     <Link to='/appointments' className='text-dark fw-medium text-decoration-none'>Agendar cita</Link>
                 </nav>

@@ -11,3 +11,8 @@ export const CrearProducto = async (producto) => {
     const response = await axios.post(`${api}/crear`, producto);
     return response.data;
 }
+
+export const EliminarProducto = async(productoId) => {
+    await axios.delete(`${api}/${productoId}`)
+}
+

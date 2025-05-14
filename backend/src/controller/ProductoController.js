@@ -1,4 +1,4 @@
-import { getAllProducts, insertProduct } from "../model/ProductoModel.js";
+import { getAllProducts, insertProduct, deleteProduct} from "../model/ProductoModel.js";
 
 const getAllP = async (req, res) => {
     try {
@@ -25,5 +25,23 @@ const createP = async (req,res) => {
         res.status(500).json({message: "Error interno al crear producto"})
     }
 }
-
-export { getAllP, createP};
+/*
+const deleteP = async (req,res) => {
+    try {
+        await deleteProduct(req.params)
+        res.status(201).json({message: "Producto Eliminado exitosamente"})
+    } catch (error) {
+        console.error("Error al eliminar producto", error)
+        res.status(500).json({message: "Error interno al eliminar producto"})
+    }
+}
+*/
+const deleteP = async (req, res) =>{
+    try {
+        await deleteProduct(req.params)
+        res.status(201).json({message: 'Producto eliminado'})
+    } catch (error) {
+        res.status(500).json({message: error.message})
+    }
+}
+export { getAllP, createP, deleteP};

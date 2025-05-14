@@ -1,4 +1,4 @@
-import { getConnection } from "../config/Connection.js";
+import {sql, getConnection } from "../config/Connection.js";
 
 const getAllProducts = async () => {
     const connection  = await getConnection
@@ -19,7 +19,16 @@ const insertProduct = async(product) =>{
         .input('Imagen', Imagen)
         .input('Descripcion', descripcionValue)
         .input('Nit', 123)
-        .query('INSERT INTO Producto (Nombre, Descripcion, Precio, Imagen, Nit) VALUES (@Nombre, @Descripcion, @Precio, @Imagen, @Nit)')
+        .execute('sp_insertar_producto')
 }
 
-export {getAllProducts, insertProduct}
+const deleteProduct = async (producto) =>{
+    const {Id} = producto
+    const con = await getConnection
+    await con.request()
+    .input('Id', sql.Int, Id)
+    .execute('sp_eliminar_producto')
+    
+}
+
+export {getAllProducts, insertProduct, deleteProduct}

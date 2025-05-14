@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
-import { ObtenerPorductos, CrearProducto} from '../services/ProductService'
-
-import axios from 'axios'
+import  { useEffect, useState } from 'react'
+import { ObtenerPorductos, CrearProducto, EliminarProducto} from '../services/ProductService'
+import Swal from 'sweetalert2/dist/sweetalert2.all.min.js';
+import axios from 'axios';
 
 export default function Products() {
  
@@ -49,10 +49,48 @@ export default function Products() {
       fetchProducts()
       setShowCreateModal(false)
       setNewProduct({ Nombre: '', Precio: '', Imagen: '', Descripcion: '' })
+      Swal.fire('Exitoso', 'Producto Registrado', 'success')
+
     }catch (error) {
       console.error("Error al agregar producto: ", error)
     }
   }
+
+  
+  const handleDelete = (id) => {
+    Swal.fire({
+      title: "Estas seguro?",
+      text: "Esta acción no se puede revertir!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Si, Eliminar!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        EliminarProducto(id)
+        .then(() => {
+          fetchProducts();
+          Swal.fire({
+            title: "Eliminado!",
+            text: "Se ha eliminado el producto.",
+            icon: "success"
+          });
+        })
+        .catch((error) => {
+          console.error("Error eliminando el producto:", error.response || error);
+          Swal.fire({
+            title: "Error!",
+            text: "Se produjo un problema al eliminar el producto. Inténtalo de nuevo más tarde.",
+            icon: "error"
+          });
+        });
+      }
+    });
+  };
+
+
+  
 
   if (loading) {
     return <div>Cargando productos...</div>
@@ -67,10 +105,9 @@ export default function Products() {
         <div className='d-flex justify-content-center mb-3'>
 
           <button className='btn btn-success fw-bold me-3' onClick={() => setShowCreateModal(true)}>➕ Agregar producto</button>
-          {/*<button className='btn btn-secondary fw-bold me-3'>⚙️ Editar producto</button>
-          <button className='btn btn-danger fw-bold me-3'>➖ Eliminar producto</button>*/}
           <button className='btn btn-info fw-bold me-3' onClick={()=> setShowListModal(true)}>ℹ️ Mostrar lista de productos</button>
         </div>
+
         {products.map((product) => (
           <div key={product.Id} className="col-md-3 me-3 col-sm-12 mb-4 d-flex flex-column align-items-center text-center rounded-custom border border-medium p-3 shadow">
             <img className="w-75" src={product.Imagen} alt={product.Nombre} />
@@ -153,7 +190,7 @@ export default function Products() {
 
                 <div className='modal-body'>
                   <div className='table-responsive'>
-                    <table class="table table-striped">
+                    <table className="table table-striped">
                       <thead>
                         <tr className='text-center'>
                           <th scope="col">Id</th>
@@ -179,11 +216,10 @@ export default function Products() {
                             </td>
                             <td scope="row">
                               <button className='btn btn-success rounded-custom mb-1 me-1'>Editar</button>
-                              <button className='btn btn-danger rounded-custom'>Eliminar</button>
+                              <button className='btn btn-danger rounded-custom' onClick={()=>handleDelete(product.Id)}>Eliminar</button>
                             </td>
                           </tr>
                         )}
-
                       </tbody>
                     </table>
                   </div>
