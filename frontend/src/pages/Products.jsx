@@ -1,7 +1,6 @@
 import  { useEffect, useState } from 'react'
 import { ObtenerPorductos, CrearProducto, EliminarProducto, EditarProducto} from '../services/ProductService'
 import Swal from 'sweetalert2/dist/sweetalert2.all.min.js';
-import axios from 'axios';
 
 export default function Products() {
  
@@ -9,6 +8,8 @@ export default function Products() {
   const [loading, setLoading] = useState(true)
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showListModal, setShowListModal] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('');
+
   const [newProduct, setNewProduct] = useState({
     Nombre : '',
     Precio : '',
@@ -36,6 +37,14 @@ export default function Products() {
     const { name, value } = e.target
     setNewProduct({...newProduct, [name]: value})
   }
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value)
+  }
+
+  const filteredProducts = products.filter(product =>
+    product.Nombre.toLowerCase().includes(searchTerm.toLowerCase())
+  )
 
   const handleAddProduct = async() =>{
 
@@ -162,10 +171,22 @@ export default function Products() {
   }
 
   return (
+
     <div  className='container'>
       <div className='d-flex justify-content-center '>
         <h1 className='fw-bold text-dark py-5'>Nuestros Productos</h1>
       </div>
+      {/*Barra de busqueda*/}
+      <div className="d-flex justify-content-center mb-3">
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Buscar producto..."
+          value={searchTerm}
+          onChange={handleSearchChange}
+        />
+      </div>
+
       <div className="row d-flex justify-content-center py-3">
         <div className='d-flex justify-content-center mb-3'>
 
@@ -173,19 +194,20 @@ export default function Products() {
           <button className='btn btn-info fw-bold me-3' onClick={()=> setShowListModal(true)}>ℹ️ Mostrar lista de productos</button>
         </div>
 
-        {products.map((product) => (
-          <div key={product.Id} className="col-md-3 me-3 col-sm-12 mb-4 d-flex flex-column align-items-center text-center rounded-custom border border-medium p-3 shadow">
-            <img className="w-75" src={product.Imagen} alt={product.Nombre} />
-            <p className='fw-bold'>{product.Nombre}</p>
-            <p className="text-custom-purple">{`$ ${new Intl.NumberFormat('es-ES').format(product.Precio)}`}</p>
-
-            <button className="btn btn-primary mt-2 fw-bold">  
-              Agregar al carrito
-            </button>
-            
-          </div>
-          /*Agregar en el boton la funcion para agregar al carrito */
-        ))}
+        {filteredProducts.length > 0 ? (
+          filteredProducts.map((product) => (
+            <div key={product.Id} className="col-md-3 me-3 col-sm-12 mb-4 d-flex flex-column align-items-center text-center rounded-custom border border-medium p-3 shadow">
+              <img className="w-75" src={product.Imagen} alt={product.Nombre} />
+              <p className="fw-bold">{product.Nombre}</p>
+              <p className="text-custom-purple">{`$ ${new Intl.NumberFormat('es-ES').format(product.Precio)}`}</p>
+              <button className="btn btn-primary mt-2 fw-bold">
+                Agregar al carrito
+              </button>
+            </div>
+          ))
+        ) : (
+          <p className='alert alert-info fw-bold'>No se encontraron productos que coincidan con la búsqueda.</p>
+        )}
       </div>
 
       {showCreateModal &&(
