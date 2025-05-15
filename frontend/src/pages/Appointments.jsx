@@ -10,7 +10,7 @@ export default function Appointments() {
   return (
     <div className='d-flex justify-content-center align-items-center mt-5 mb-5'>
         <div className='p-4 shadow rounded-custom w-50'>
-            <h1 className='fw-bold text-dark text-center mb-4'>Agendar cita</h1>
+            <h1 className='fw-bold text-dark text-center mb-4'>Agendar Cita</h1>
             <form>
               {/*Información dueño */}
               <h5 className='text-center text-secondary'>Información dueño</h5>

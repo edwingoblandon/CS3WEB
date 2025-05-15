@@ -22,8 +22,8 @@ const insertProduct = async(product) =>{
         .execute('sp_insertar_producto')
 }
 
-const deleteProduct = async (producto) =>{
-    const {Id} = producto
+const deleteProduct = async (product) =>{
+    const {Id} = product
     const con = await getConnection
     await con.request()
     .input('Id', sql.Int, Id)
@@ -31,4 +31,19 @@ const deleteProduct = async (producto) =>{
     
 }
 
-export {getAllProducts, insertProduct, deleteProduct}
+const editProduct = async (product) =>{
+    const {Id,Nombre, Precio, Imagen, Descripcion} = product
+    const connection = await getConnection
+    const descripcionValue = Descripcion && Descripcion.trim() !== "" ? Descripcion : null;
+
+    await connection.request()
+    .input('Id', sql.Int, Id)
+    .input('Nombre', Nombre)
+    .input('Precio', Precio)
+    .input('Imagen', Imagen)
+    .input('Descripcion', descripcionValue)
+    .input('Nit', 123)
+    .execute('sp_editar_producto')
+    
+}
+export {getAllProducts, insertProduct, deleteProduct, editProduct}

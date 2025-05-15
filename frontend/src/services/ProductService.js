@@ -16,3 +16,13 @@ export const EliminarProducto = async(productoId) => {
     await axios.delete(`${api}/${productoId}`)
 }
 
+export const EditarProducto = async(producto) => {
+   try {
+    const { Id } = producto;
+    if (!Id) throw new Error('Id del producto no definido');
+    await axios.put(`${api}/${Id}`, producto);
+  } catch (error) {
+    console.error('Error al editar producto:', error);
+    throw error;
+  }
+}

@@ -1,5 +1,5 @@
 import  { useEffect, useState } from 'react'
-import { ObtenerPorductos, CrearProducto, EliminarProducto} from '../services/ProductService'
+import { ObtenerPorductos, CrearProducto, EliminarProducto, EditarProducto} from '../services/ProductService'
 import Swal from 'sweetalert2/dist/sweetalert2.all.min.js';
 import axios from 'axios';
 
@@ -40,7 +40,11 @@ export default function Products() {
   const handleAddProduct = async() =>{
 
     if(!newProduct.Nombre || !newProduct.Precio || !newProduct.Imagen){
-      alert("Por favor completa todos los campos obligatorios");
+      Swal.fire({
+      title: "Completa los campos",
+      text: "Debes completar todos los campos obligatorios antes de continuar.",
+      icon: "info"
+    });
       return
     }
 
@@ -49,12 +53,73 @@ export default function Products() {
       fetchProducts()
       setShowCreateModal(false)
       setNewProduct({ Nombre: '', Precio: '', Imagen: '', Descripcion: '' })
-      Swal.fire('Exitoso', 'Producto Registrado', 'success')
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "Producto creado con exito!",
+        showConfirmButton: true,
+        timer: 1500
+      });
 
     }catch (error) {
       console.error("Error al agregar producto: ", error)
     }
   }
+
+  const handleEdit = async (Id) => {
+    const productToEdit = products.find(product => product.Id === Id);
+
+    if (!productToEdit) {
+      Swal.fire('Producto no encontrado', '', 'error');
+      return;
+    }
+
+    const { value: formValues } = await Swal.fire({
+      title: "Editar producto",
+      html: `
+        <h6 class="alert alert-info fw-bold">Id: ${Id}</h6>
+        <input id="swal-input1" class="form-control mb-2" placeholder="Nombre del producto" value="${productToEdit.Nombre}">
+        <input id="swal-input2" class="form-control mb-2" placeholder="Precio" type="number" value="${productToEdit.Precio}">
+        <input id="swal-input3" class="form-control mb-2" placeholder="Descripción (opcional)" value="${productToEdit.Descripcion || ''}">
+        <input id="swal-input4" class="form-control mb-2" placeholder="URL de la imagen" value="${productToEdit.Imagen}">
+      `,
+      focusConfirm: false,
+      showCancelButton: true,
+      cancelButtonText: "Cancelar",
+      confirmButtonText: "Guardar producto",
+      customClass: {
+        popup: 'swal2-popup-custom',
+        confirmButton: 'btn btn-primary',
+        cancelButton: 'btn btn-danger'
+      },
+      preConfirm: () => {
+        const nombre = document.getElementById("swal-input1").value;
+        const precio = document.getElementById("swal-input2").value;
+        const descripcion = document.getElementById("swal-input3").value;
+        const imagen = document.getElementById("swal-input4").value;
+
+        if (!nombre || !precio || !imagen) {
+          Swal.showValidationMessage("Debes completar Nombre, Precio e Imagen");
+          return false;
+        }
+
+        return { Id, Nombre: nombre, Precio: precio, Descripcion: descripcion, Imagen: imagen };
+      }
+    });
+
+    if (formValues) {
+      try {
+        await EditarProducto(formValues);
+        Swal.fire('Producto editado exitosamente!', '', 'success');
+        fetchProducts();
+      } catch (error) {
+        console.error("Error al editar producto:", error);
+        Swal.fire('Error', 'No se pudo editar el producto.', 'error');
+      }
+    }
+  }
+
+
 
   
   const handleDelete = (id) => {
@@ -112,7 +177,8 @@ export default function Products() {
           <div key={product.Id} className="col-md-3 me-3 col-sm-12 mb-4 d-flex flex-column align-items-center text-center rounded-custom border border-medium p-3 shadow">
             <img className="w-75" src={product.Imagen} alt={product.Nombre} />
             <p className='fw-bold'>{product.Nombre}</p>
-            <p className="text-custom-purple">{`$ ${product.Precio.toLocaleString()}`}</p>
+            <p className="text-custom-purple">{`$ ${new Intl.NumberFormat('es-ES').format(product.Precio)}`}</p>
+
             <button className="btn btn-primary mt-2 fw-bold">  
               Agregar al carrito
             </button>
@@ -215,7 +281,7 @@ export default function Products() {
                               </div>
                             </td>
                             <td scope="row">
-                              <button className='btn btn-success rounded-custom mb-1 me-1'>Editar</button>
+                              <button className='btn btn-success rounded-custom mb-1 me-1' onClick={() => handleEdit(product.Id)}>Editar</button>
                               <button className='btn btn-danger rounded-custom' onClick={()=>handleDelete(product.Id)}>Eliminar</button>
                             </td>
                           </tr>
